@@ -7,6 +7,7 @@ import { query } from "@/lib/db/connection";
 import { userQueries } from "@/lib/db/queries/auth";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.JWT_SECRET,
   providers: [
     Credentials({
       name: 'Credentials',
