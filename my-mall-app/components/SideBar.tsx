@@ -50,7 +50,7 @@ export default function Sidebar() {
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-indigo-600">MMS</h1>
+        <h1 className="text-xl font-bold text-indigo-600">Mall Management System</h1>
         <p className="text-xs text-gray-500 mt-1">
            ({session?.user?.role})
         </p>
