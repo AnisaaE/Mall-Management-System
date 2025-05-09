@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import Sidebar from "@/components/SideBar";
+import AuthStatus from "@/components/AuthStatus";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,15 +22,27 @@ export const metadata: Metadata = {
   description: "Mall Management System",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers session={session}> 
+          <AuthStatus />
+          {session ? (
+            <div className="flex h-screen">
+              <Sidebar />
+              <main className="flex-1 overflow-y-auto p-8">{children}</main>
+            </div>
+          ) : (
+            children
+          )}
+        </Providers>
       </body>
     </html>
   );
