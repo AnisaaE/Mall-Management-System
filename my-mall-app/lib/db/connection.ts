@@ -5,6 +5,7 @@ import { cache } from 'react';
 const createPool = cache(() => {
   return mysql.createPool({
     host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT) || 3306, // Явно указване на порта
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,

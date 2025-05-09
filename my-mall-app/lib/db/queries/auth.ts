@@ -5,7 +5,6 @@ import { hash, compare } from 'bcrypt';
 export const userQueries = {
   async findByUsername(username: string) {
     const [user] = await query<{
-      id: number;
       username: string;
       password: string;
       role: string;

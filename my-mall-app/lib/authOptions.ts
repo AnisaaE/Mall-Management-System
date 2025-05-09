@@ -3,46 +3,9 @@ import { NextAuthOptions, getServerSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { redirect } from 'next/navigation';
 import { hash, compare } from 'bcrypt';
-import mysql from 'mysql2/promise';
+import { query } from "@/lib/db/connection";
+import { userQueries } from "@/lib/db/queries/auth";
 
-// 1. DB връзка и помощни функции
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
-async function query<T = any>(sql: string, params?: any[]): Promise<T> {
-  const [rows] = await pool.query(sql, params);
-  return rows as T;
-}
-
-// 2. User related queries
-const userQueries = {
-  async findByUsername(username: string) {
-    const [user] = await query<{
-      id: number;
-      username: string;
-      password: string;
-      role: string;
-    }[]>("SELECT * FROM users WHERE username = ? LIMIT 1", [username]);
-    return user || null;
-  },
-
-  async verifyLogin(username: string, password: string) {
-    const user = await this.findByUsername(username);
-    if (!user) return null;
-
-    const isValid = await compare(password, user.password);
-    return isValid ? user : null;
-  }
-};
-
-// 3. NextAuth конфигурация
 export const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
@@ -58,9 +21,8 @@ export const authOptions: NextAuthOptions = {
           credentials.username,
           credentials.password
         );
-        
+        //in session by default we get only user id and name if there is one 
         return user ? {
-          id: user.id.toString(),
           name: user.username,
           role: user.role
         } : null;
@@ -68,6 +30,8 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+
+// слагаме допълнителни данни в токена, например роля, защото до сега в нашата сесия се пазаят сid and name
     async jwt({ token, user }) {
       if (user) {
         // Explicitly type the user object
@@ -115,7 +79,6 @@ export const authActions = {
 
 // Типове за по-лесна употреба
 export type AuthUser = {
-  id: string;
   name: string;
   role: string;
 };
