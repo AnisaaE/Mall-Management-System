@@ -32,12 +32,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      
         <Providers session={session}> 
           <AuthStatus />
           {session ? (
             <div className="flex h-screen">
               <Sidebar />
-              <main className="flex-1 overflow-y-auto ">{children}</main>
+              <main className="flex-1 overflow-y-auto bg-indigo-50 text-indigo-900">{children}</main>
             </div>
           ) : (
             children

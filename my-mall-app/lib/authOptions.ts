@@ -25,7 +25,8 @@ export const authOptions: NextAuthOptions = {
         //in session by default we get only user id and name if there is one 
         return user ? {
           name: user.username,
-          role: user.role
+          role: user.role,
+          username: user.username
         } : null;
       }
     })
@@ -35,10 +36,12 @@ export const authOptions: NextAuthOptions = {
 // слагаме допълнителни данни в токена, например роля, защото до сега в нашата сесия се пазаят сid and name
     async jwt({ token, user }) {
       if (user) {
-        // Explicitly type the user object
-        const typedUser = user as { role?: string };
+        const typedUser = user as { role?: string; username?: string };
         if (typedUser.role) {
           token.role = typedUser.role;
+        }
+        if (typedUser.username) {
+          token.username = typedUser.username;
         }
       }
       return token;
@@ -47,6 +50,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token.role) {
         // Safely assign the role with proper typing
         session.user.role = token.role as string;
+        session.user.username = token.username as string;
       }
       return session;
     }
