@@ -77,7 +77,7 @@ export default async function ContractsPage() {
                     {contract.end_date}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {contract.rent_amount} dollar.
+                    {contract.rent_amount} TL.
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {contract.manager_name || '-'}
@@ -88,7 +88,7 @@ export default async function ContractsPage() {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {contract.is_active ? 'Активен' : 'Изтекъл'}
+                      {contract.is_active ? 'Active' : 'Expired'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
