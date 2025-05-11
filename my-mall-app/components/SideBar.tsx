@@ -23,7 +23,7 @@ export default function Sidebar() {
     { name: "Dashboard", href: "/", icon: HomeIcon },
     { name: "Shops", href: "/shops", icon: BuildingStorefrontIcon },
     { name: "Employees", href: "/employees", icon: UserGroupIcon },
-    { name: "Shop Contracts", href: "/shop-contracts", icon: DocumentTextIcon },
+    { name: "Shop Contracts", href: "/contracts", icon: DocumentTextIcon },
     { name: "Employee Contracts", href: "/employee-contracts", icon: DocumentTextIcon },
     { name: "Payments", href: "/payments", icon: CreditCardIcon },
     { name: "Events", href: "/events", icon: CalendarIcon },

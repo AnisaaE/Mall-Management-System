@@ -13,18 +13,28 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Без допълнителна проверка за role и username
-  const sql = `
+  const shopSql = `
     SELECT s.shop_id, s.name, s.floor, c.name AS category
     FROM shop s
     JOIN category c ON s.category_id = c.category_id
     WHERE s.shop_id = ?
   `;
-  const results = await query(sql, [params.shopId]);
+  const shopResults = await query(shopSql, [params.shopId]);
 
-  if (results.length === 0) {
+  if (shopResults.length === 0) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  return NextResponse.json(results[0]);
+  const shop = shopResults[0];
+
+  const contractSql = `
+    SELECT * FROM active_contracts
+    WHERE shop_id = ?
+  `;
+  const contractResults = await query(contractSql, [params.shopId]);
+
+  return NextResponse.json({
+    ...shop,
+    activeContracts: contractResults
+  });
 }
