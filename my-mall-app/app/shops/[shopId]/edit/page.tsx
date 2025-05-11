@@ -15,14 +15,13 @@ type Shop = {
 export default async function EditShopPage({
   params,
 }: {
-  params: { shopId: string };
+  params: Promise<{ shopId: string }>;
 }) {
   const session = await getServerSession(authOptions);
 
+  const { shopId } = await params;
   if (!session?.user) redirect('/login');
-  if (session.user.role !== 'manager') redirect('/unauthorized');
-
-  const shopId = params.shopId;
+  if (session.user.role !== 'admin') redirect('/unauthorized');
 
   const sql = `
     SELECT s.shop_id, s.name, s.floor, c.name AS category

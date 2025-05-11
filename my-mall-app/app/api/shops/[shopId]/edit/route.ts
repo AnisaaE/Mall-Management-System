@@ -10,7 +10,7 @@ export async function POST(
   const session = await getServerSession(authOptions);
 
   // Проверка за сесия и роля
-  if (!session?.user || session.user.role !== 'manager') {
+  if (!session?.user || session.user.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
