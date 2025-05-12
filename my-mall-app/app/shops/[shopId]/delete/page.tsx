@@ -12,19 +12,17 @@ export default function DeleteShopPage({
   const [shopId, setShopId] = useState<string | null>(null);
   const router = useRouter();
 
-  // Извличаме параметъра shopId
   useEffect(() => {
     const fetchShopId = async () => {
       const { shopId } = await params;
-      setShopId(shopId); // Съхраняваме shopId в състоянието
+      setShopId(shopId); 
     };
 
     fetchShopId();
   }, [params]);
 
-  // Извличаме информация за магазина при зареждане на страницата
   useEffect(() => {
-    if (!shopId) return; // Ако няма shopId, не извършваме нищо
+    if (!shopId) return; 
     const fetchShopDetails = async () => {
       const res = await fetch(`/api/shops/${shopId}`);
       if (res.ok) {
@@ -42,8 +40,8 @@ export default function DeleteShopPage({
     });
 
     if (res.ok) {
-      alert('Магазинът беше изтрит успешно!');
-      router.push('/shops'); // Редирект към страницата със списък на магазините
+      alert('The shop has been deleted!');
+      router.push('/shops'); 
     } else {
       alert('The shop can not be deleted because it has running contracts.');
     }

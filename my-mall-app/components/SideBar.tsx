@@ -32,8 +32,9 @@ export default function Sidebar() {
 
   // Ограничена навигация за мениджъри
   const managerNavItems = [
+    { name: "Dashboard", href: "/", icon: HomeIcon },
     { name: "Shops", href: "/shops", icon: BuildingStorefrontIcon },
-    { name: "Shop Contracts", href: "/shop-contracts", icon: DocumentTextIcon },
+    { name: "Shop Contracts", href: "/contracts", icon: DocumentTextIcon },
     { name: "Payments", href: "/payments", icon: CreditCardIcon },
   ];
 

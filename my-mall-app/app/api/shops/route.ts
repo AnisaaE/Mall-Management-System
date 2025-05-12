@@ -5,7 +5,6 @@ import { query } from '@/lib/db/connection';
 
 export async function GET(req: Request) {
 
-  console.log("API road reached");
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -14,9 +13,8 @@ export async function GET(req: Request) {
   // read optional query params
   const url = new URL(req.url);
   const sort = url.searchParams.get('sort');       // 'asc' or 'desc'
-  const category = url.searchParams.get('category'); // e.g. 'Дрехи'
+  const category = url.searchParams.get('category'); // e.g. 'Toys'
 
-  // Base SQL
   let sql = `
     SELECT s.shop_id, s.name, s.floor, c.name AS category
     FROM shop s

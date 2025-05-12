@@ -4,13 +4,7 @@ import { authOptions } from '@/lib/authOptions';
 import { query } from '@/lib/db/connection';
 import { redirect } from 'next/navigation';
 import EditForm from '@/components/EditForm';
-
-type Shop = {
-  shop_id: number;
-  name: string;
-  floor: string;
-  category: string;
-};
+import { Shop } from '@/types/db_types';
 
 export default async function EditShopPage({
   params,

@@ -40,11 +40,8 @@ export default function NewContractForm({
     
     if (response.ok) {
       const result = await response.json();
-      // Добавяме новия мениджър към списъка
       setManagers([...managers, result]);
-      // Автоматично избираме новия мениджър
       setFormData({...formData, manager_id: result.manager_id});
-      // Затваряме модала и нулираме формата
       setShowManagerModal(false);
       setNewManager({ name: '', phone: '', email: '' });
     }
@@ -147,7 +144,7 @@ export default function NewContractForm({
               onClick={() => setShowManagerModal(true)}
               className="px-3 py-1 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              Нов мениджър
+              New Manager
             </button>
           </div>
         </div>

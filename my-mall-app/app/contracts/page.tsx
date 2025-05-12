@@ -3,16 +3,8 @@ import { authOptions } from '@/lib/authOptions';
 import { query } from '@/lib/db/connection';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import {Contract} from '@/types/db_types';
 
-type Contract = {
-  contract_id: number;
-  shop_name: string;
-  start_date: string;
-  end_date: string;
-  rent_amount: number;
-  manager_name: string;
-  is_active: boolean;
-};
 
 export default async function ContractsPage() {
   const session = await getServerSession(authOptions);

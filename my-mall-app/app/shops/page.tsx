@@ -3,8 +3,9 @@ import { authOptions } from '@/lib/authOptions';
 import { redirect } from 'next/navigation';
 import ShopFilters from '@/components/ShopFilters';
 import { query } from '@/lib/db/connection';
-
+import { Shop, Category } from '@/types/db_types';
 export default async function ShopsPage() {
+  
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect('/login');
 
@@ -23,10 +24,10 @@ export default async function ShopsPage() {
     `;
     params.push(session.user.username);
   }
-  const shops = await query<{ shop_id: number; name: string; floor: string; category: string }[]>(sql, params);
+  const shops = await query<Shop[]>(sql, params);
 
   // fetch all categories
-  const cats = await query<{ name: string }[]>('SELECT name FROM category');
+  const cats = await query<Category []>('SELECT name FROM category');
   const categories = ['All', ...cats.map(c => c.name)];
 
   return (

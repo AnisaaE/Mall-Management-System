@@ -4,22 +4,7 @@ import { query } from '@/lib/db/connection';
 import { redirect } from 'next/navigation';
 import DeleteShopButton from '@/components/DeleteShopButton';
 import { format } from 'date-fns';
-
-type Contract = {
-  contract_id: number;
-  shop_id: number;
-  start_date: Date;
-  end_date: Date;
-  rent_amount: string;
-  manager_name: string;
-};
-
-type Shop = {
-  shop_id: number;
-  name: string;
-  floor: string;
-  category: string;
-};
+import { Contract, Shop } from '@/types/db_types';
 
 export default async function ShopDetailPage({
   params,
@@ -116,7 +101,7 @@ export default async function ShopDetailPage({
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Rent</p>
-                      <p className="font-medium">{contract.rent_amount} лв.</p>
+                      <p className="font-medium">{contract.rent_amount} TL</p>
                     </div>
                   </div>
                   {contract.manager_name && (

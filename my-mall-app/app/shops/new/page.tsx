@@ -1,13 +1,8 @@
-// app/shops/new/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-type Category = {
-  category_id: number;
-  name: string;
-};
+import { Category } from '@/types/db_types';
 
 export default function AddShopPage() {
   const router = useRouter();

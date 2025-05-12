@@ -57,7 +57,6 @@ export const authOptions: NextAuthOptions = {
   }
 };
 
-// 4. Auth actions
 export const authActions = {
   getCurrentUser: async () => {
     const session = await getServerSession(authOptions);
@@ -82,8 +81,3 @@ export const authActions = {
   }
 };
 
-// Типове за по-лесна употреба
-export type AuthUser = {
-  name: string;
-  role: string;
-};
