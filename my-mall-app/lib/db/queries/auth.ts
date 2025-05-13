@@ -6,9 +6,11 @@ export const userQueries = {
   async findByUsername(username: string) {
     const [user] = await query<{
       username: string;
-      password: string;
+      password_hash: string;
       role: string;
-    }[]>("SELECT * FROM users WHERE username = ? LIMIT 1", [username]);
+    }[]>("SELECT * FROM user WHERE username = ? LIMIT 1", [username]);
+
+    console.log('userQueries.findByUsername:', user);
     return user || null;
   },
 
@@ -16,7 +18,7 @@ export const userQueries = {
     const user = await this.findByUsername(username);
     if (!user) return null;
 
-    const isValid = await compare(password, user.password);
+    const isValid = await compare(password, user.password_hash);
     return isValid ? user : null;
   },
 

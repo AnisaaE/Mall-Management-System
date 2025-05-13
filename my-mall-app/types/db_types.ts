@@ -46,3 +46,12 @@ export type Employee = {
   surname: string;
   position_name?: string;
 };
+
+export interface Position {
+  position_id: number;
+  position_name: string;
+}
+
+export interface User {
+  username: string;
+}
