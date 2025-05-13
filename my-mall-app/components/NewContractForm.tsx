@@ -27,7 +27,9 @@ export default function NewContractForm({
     manager_id: ''
   });
 
+ const [loading, setLoading] = useState(false);
   const handleAddManager = async () => {
+     setLoading(true);
     if (!newManager.name) return;
     
     const response = await fetch('/api/managers', {
@@ -45,11 +47,13 @@ export default function NewContractForm({
       setShowManagerModal(false);
       setNewManager({ name: '', phone: '', email: '' });
     }
+
+    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+     setLoading(true);
     const contractResponse = await fetch('/api/contracts', {
       method: 'POST',
       headers: {
@@ -62,6 +66,8 @@ export default function NewContractForm({
       router.push('/contracts');
       router.refresh();
     }
+
+    setLoading(false);
   };
   return (
     <>
@@ -161,9 +167,10 @@ export default function NewContractForm({
         </button>
         <button
           type="submit"
+           disabled={loading}
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
-          Save
+            {loading ? 'Saving...' : 'Save'}
         </button>
       </div>
     </form>
@@ -214,10 +221,11 @@ export default function NewContractForm({
               </button>
               <button
                 type="button"
+                disabled={loading}
                 onClick={handleAddManager}
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
-                Add Manager
+                {loading ? 'Saving...' : 'Add manager'}
               </button>
             </div>
           </div>

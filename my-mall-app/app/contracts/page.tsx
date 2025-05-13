@@ -10,7 +10,7 @@ export default async function ContractsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect('/login');
 
-  const contracts = await query<Contract[]>(`
+  let sql = `
     SELECT 
       sc.contract_id,
       s.name AS shop_name,
@@ -23,8 +23,16 @@ export default async function ContractsPage() {
     JOIN shop s ON sc.shop_id = s.shop_id
     JOIN duration d ON sc.duration_id = d.duration_id
     LEFT JOIN manager m ON sc.manager_id = m.manager_id
-    ORDER BY d.end_date DESC
-  `);
+  `
+  const params: any[] = [];
+
+   if (session.user.role === 'manager') {
+    sql += `
+      WHERE m.username = ?
+    `;
+     params.push(session.user.username);
+  }
+  const contracts = await query<Contract[]>(sql, params  );
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -48,6 +56,7 @@ export default async function ContractsPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contract ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shop</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End</th>
@@ -58,7 +67,9 @@ export default async function ContractsPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {contracts.map((contract) => (
+
                 <tr key={contract.contract_id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> {contract.contract_id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {contract.shop_name}
                   </td>
@@ -83,7 +94,8 @@ export default async function ContractsPage() {
                       {contract.is_active ? 'Active' : 'Expired'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  {session.user.role != 'manager' && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link
                       href={`/contracts/${contract.contract_id}`}
                       className="text-blue-600 hover:text-blue-900 mr-3"
@@ -91,6 +103,7 @@ export default async function ContractsPage() {
                       Details
                     </Link>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

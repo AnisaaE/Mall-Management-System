@@ -35,7 +35,7 @@ export default async function ShopsPage() {
       <h1 className="text-2xl font-bold mb-6">
         {session.user.role === 'manager' ? 'Your Shops' : 'All Shops'}
       </h1>
-      
+      <></>
     
       <ShopFilters initialShops={shops} categories={categories} />
 

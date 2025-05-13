@@ -39,3 +39,10 @@ export type AuthUser = {
   name: string;
   role: string;
 };
+
+export type Employee = {
+  employee_id: number;
+  name: string;
+  surname: string;
+  position_name?: string;
+};

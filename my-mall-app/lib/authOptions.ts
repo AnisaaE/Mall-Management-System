@@ -32,7 +32,6 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-
 // слагаме допълнителни данни в токена, например роля, защото до сега в нашата сесия се пазаят сid and name
     async jwt({ token, user }) {
       if (user) {
@@ -79,5 +78,6 @@ export const authActions = {
     );
     return insertId;
   }
+  
 };
 

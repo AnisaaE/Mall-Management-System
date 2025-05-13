@@ -10,7 +10,7 @@ export default async function NewContractPage() {
     redirect('/contracts');
   }
 
-  const shops = await query('SELECT shop_id, name FROM shop ORDER BY name');
+  const shops = await query('SELECT shop_id, name FROM shop where shop_id not in (select shop_id from active_contracts) ORDER BY name');
   const managers = await query(`
     SELECT m.manager_id, m.name 
     FROM manager m
