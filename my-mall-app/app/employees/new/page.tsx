@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Position, User } from '@/types/db_types';
+import { Position } from '@/types/db_types';
 
 export default function AddEmployeePage() {
   const router = useRouter();
@@ -11,7 +11,6 @@ export default function AddEmployeePage() {
   const [positionId, setPositionId] = useState<number | null>(null);
   const [username, setUsername] = useState('');
   const [positions, setPositions] = useState<Position[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,16 +23,9 @@ export default function AddEmployeePage() {
       }
     };
 
-    const fetchUsers = async () => {
-      const res = await fetch('/api/users');
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data);
-      }
-    };
-
+    
     fetchPositions();
-    fetchUsers();
+    
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,22 +84,6 @@ export default function AddEmployeePage() {
             {positions.map((pos) => (
               <option key={pos.position_id} value={pos.position_id}>
                 {pos.position_name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block font-medium">Username:</label>
-          <select
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded"
-            required
-          >
-            <option value="" disabled>Select a user</option>
-            {users.map((user) => (
-              <option key={user.username} value={user.username}>
-                {user.username}
               </option>
             ))}
           </select>

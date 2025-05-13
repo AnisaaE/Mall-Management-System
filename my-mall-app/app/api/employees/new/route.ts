@@ -1,63 +1,36 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import mysql from 'mysql2/promise';
+import { query } from '@/lib/db/connection';
+import { NextResponse } from 'next/server';
 
-type Data = {
-  error?: string;
-  success?: string;
-};
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { name, surname, position_id } = body;
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  if (req.method === 'POST') {
-    const { name, surname, position_id, username } = req.body;
-
-    if (!name || !surname || !position_id || !username) {
-      return res.status(400).json({ error: 'All fields are required' });
+    // Alan kontrolü
+    if (!name || !surname || !position_id ) {
+      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    // Database connection settings
-    const dbConfig = {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-    };
-
-    try {
-      const connection = await mysql.createConnection(dbConfig);
-
-      // Check if the user exists
-      const [userRows] = await connection.execute('SELECT * FROM user WHERE username = ?', [username]);
-      if ((userRows as any).length === 0) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-
-      // Check if the position exists
-      const [positionRows] = await connection.execute('SELECT * FROM positions WHERE position_id = ?', [position_id]);
-      if ((positionRows as any).length === 0) {
-        return res.status(404).json({ error: 'Position not found' });
-      }
-
-      // Insert the new employee
-      const [result] = await connection.execute(
-        'INSERT INTO employee (name, surname, position_id, username) VALUES (?, ?, ?, ?)',
-        [name, surname, position_id, username]
-      );
-
-      // Check the result of the INSERT operation
-      if ((result as any).affectedRows > 0) {
-        return res.status(201).json({ success: 'Employee created successfully' });
-      } else {
-        return res.status(500).json({ error: 'Failed to create employee' });
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+    // Pozisyon kontrolü
+    const positionResult = await query('SELECT 1 FROM positions WHERE position_id = ?', [position_id]);
+    if (!Array.isArray(positionResult) || positionResult.length === 0) {
+      return NextResponse.json({ error: 'Position not found' }, { status: 404 });
     }
-  } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
+
+    // Çalışanı ekle
+    const insertResult = await query(
+      'INSERT INTO employee (name, surname, position_id, username) VALUES (?, ?, ?,NULL)',
+      [name, surname, position_id]
+    );
+
+    if ((insertResult as any).affectedRows > 0) {
+      return NextResponse.json({ success: 'Employee created successfully' }, { status: 201 });
+    } else {
+      return NextResponse.json({ error: 'Failed to create employee' }, { status: 500 });
+    }
+  } catch (err) {
+    console.error('DB Error:', err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
