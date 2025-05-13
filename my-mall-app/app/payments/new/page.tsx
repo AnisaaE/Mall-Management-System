@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function PaymentForm({ shops }: { shops: any[] }) {
+export default function PaymentForm() {
   const [formData, setFormData] = useState({
     shop_id: '',
     amount: '',

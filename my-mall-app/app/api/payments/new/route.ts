@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const contractRes = await query(
       `SELECT contract_id FROM shop_contract sc
        JOIN duration d ON sc.duration_id = d.duration_id
-       WHERE sc.shop_id = ? AND CURDATE() BETWEEN d.start_date AND d.end_date
+       WHERE sc.shop_id = ? AND CURDATE() BETWEEN d.start_date AND d.end_date 
        LIMIT 1`,
       [shop_id]
     );
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const contract_id = contractRes[0].contract_id;
 
     await query(
-      `INSERT INTO payments (contract_id, amount, payment_date, status, payment_method)
+      `INSERT INTO payments (contract_id, amount, payment_date, status, payment_method, )
        VALUES (?, ?, ?, 'Pending', ?)`,
       [contract_id, amount, payment_date, payment_method]
     );

@@ -14,7 +14,7 @@ export function PaymentActionButtons({ paymentId }: { paymentId: number }) {
       },
       body: JSON.stringify({ status }),
     });
-    location.reload(); // Или използвай SWR mutate, ако го използваш
+    location.reload(); 
   };
 
   return (
