@@ -12,24 +12,29 @@ export default async function AddEmployeeContractPage() {
   }
 
   const employees = await query(`
-    SELECT employee_id, name 
-    FROM employee 
-    ORDER BY name
-  `);
-
-  const durations = await query(`
-    SELECT duration_id, 
-           DATE_FORMAT(start_date, '%d.%m.%Y') AS start_date,
-           DATE_FORMAT(end_date, '%d.%m.%Y') AS end_date
-    FROM duration
-    ORDER BY start_date DESC
+    SELECT e.employee_id, e.name
+    FROM employee e
+    WHERE e.employee_id NOT IN (
+      -- Aktif sözleşmesi olanları çıkar
+      SELECT ec.employee_id
+      FROM employee_contract ec
+      JOIN duration d ON ec.duration_id = d.duration_id
+      WHERE CURDATE() BETWEEN d.start_date AND d.end_date
+    )
+    AND e.employee_id NOT IN (
+      -- duration_id NULL olanları da çıkar (bozuk kayıtlar)
+      SELECT employee_id
+      FROM employee_contract
+      WHERE duration_id IS NULL
+    )
+    ORDER BY e.name
   `);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Yeni Çalışan Sözleşmesi Ekle</h1>
-        <EmployeeContractForm employees={employees} durations={durations} />
+        <EmployeeContractForm employees={employees} />
       </div>
     </div>
   );
