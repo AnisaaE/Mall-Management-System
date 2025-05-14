@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { query } from "@/lib/db/connection";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function EmployeeContractsPage() {
   const session = await getServerSession(authOptions);
@@ -25,6 +26,16 @@ export default async function EmployeeContractsPage() {
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Employee Contracts</h1>
+
+      {/* ✅ Ekleme butonu */}
+      {session.user.role === "admin" && (
+        <Link
+          href="/employee-contracts/add"
+          className="inline-block mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Yeni Sözleşme Ekle
+        </Link>
+      )}
 
       <table className="w-full border text-sm text-center">
         <thead className="bg-gray-100">
