@@ -1,3 +1,4 @@
+// src/lib/db/connection.ts
 import mysql from 'mysql2/promise';
 
 const globalForMysql = globalThis as unknown as {

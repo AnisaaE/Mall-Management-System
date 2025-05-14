@@ -9,10 +9,10 @@
             "server": "localhost",
             "port": 3306,
             "driver": "MySQL",
-            "name": "sqlconnection",
+            "name": "mall-management",
             "database": "mall_management",
             "username": "root",
-            "password": "enes.129912"
+            "password": "S45ouABm*"
         }
     ]
 }
