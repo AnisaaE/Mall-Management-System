@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import ShopFilters from '@/components/ShopFilters';
 import { query } from '@/lib/db/connection';
 import { Shop, Category } from '@/types/db_types';
+
+
 export default async function ShopsPage() {
   
   const session = await getServerSession(authOptions);
