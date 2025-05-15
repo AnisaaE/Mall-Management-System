@@ -1,8 +1,9 @@
-import React from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { query } from "@/lib/db/connection";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import EmployeeContractTable from "@/components/EmployeeContractTable";
 
 export default async function EmployeeContractsPage() {
   const session = await getServerSession(authOptions);
@@ -26,38 +27,16 @@ export default async function EmployeeContractsPage() {
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Employee Contracts</h1>
 
-      <table className="w-full border text-sm text-center">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border">Employee</th>
-            <th className="p-2 border">Start</th>
-            <th className="p-2 border">End</th>
-            <th className="p-2 border">Salary</th>
-            <th className="p-2 border">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employeeContracts.map((c) => (
-            <tr key={c.contract_id} className="hover:bg-gray-50">
-              <td className="p-2 border">{c.employee_name}</td>
-              <td className="p-2 border">{c.start_date}</td>
-              <td className="p-2 border">{c.end_date}</td>
-              <td className="p-2 border">{c.salary} TL</td>
-              <td className="p-2 border">
-                <span
-                  className={`px-2 py-1 rounded text-xs font-semibold ${
-                    c.is_active
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {c.is_active ? "Active" : "Expired"}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {session.user.role === "admin" && (
+        <Link
+          href="/employee-contracts/add"
+          className="inline-block mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Yeni Sözleşme Ekle
+        </Link>
+      )}
+
+      <EmployeeContractTable contracts={employeeContracts} />
     </div>
   );
 }
