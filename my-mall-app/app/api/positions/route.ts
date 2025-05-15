@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const positions = await query('SELECT * FROM positions');
+    const positions = await query('SELECT position_id,position_name FROM positions');
 
     return NextResponse.json(positions, { status: 200 });
   } catch (error) {

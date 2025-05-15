@@ -4,13 +4,15 @@ import { authOptions } from '@/lib/authOptions';
 import { redirect } from 'next/navigation';
 import { query } from '@/lib/db/connection';
 import { Employee } from '@/types/db_types';
+import Link from 'next/link';
+
 
 export default async function EmployeesPage() {
    const session = await getServerSession(authOptions);
    if (!session?.user) redirect('/login');
 
   let sql = `
-    SELECT e.employee_id, e.name, e.surname, p.position_name
+    SELECT e.employee_id, e.name AS first_name, e.surname AS last_name, p.position_name AS position
     FROM employee e
     LEFT JOIN positions p ON e.position_id = p.position_id
   `;
@@ -32,13 +34,15 @@ export default async function EmployeesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {employees.map(emp => (
-          <div
+          <Link
+          
             key={emp.employee_id}
+            href={`/employees/${emp.employee_id}`} 
             className="border p-4 rounded shadow hover:shadow-md transition"
           >
-            <h2 className="text-xl font-semibold">{emp.name} {emp.surname}</h2>
-            <p className="text-gray-600">{emp.position_name || 'No Position'}</p>
-          </div>
+            <h2 className="text-xl font-semibold">{emp.first_name} {emp.last_name}</h2>
+            <p className="text-gray-600">{emp.position || 'No Position'}</p>
+          </Link>
         ))}
       </div>
 
