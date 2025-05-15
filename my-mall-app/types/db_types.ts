@@ -42,16 +42,28 @@ export type AuthUser = {
 
 export type Employee = {
   employee_id: number;
-  name: string;
-  surname: string;
-  position_name?: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  position_id: number;
+  position?: string;
 };
 
-export interface Position {
-  position_id: number;
-  position_name: string;
-}
+export type EmployeeContract = {
+  contract_id?: number;
+  last_name?: string;
+  start_date: string;
+  end_date: string;
+  salary?: number;
+  first_name?: string;
+  is_active?: boolean;
+  employee_id?: number;
+  duration_id?: number;
 
-export interface User {
-  username: string;
-}
+};
+
+export type Position= {
+  position_id:number;
+  position_name:string;
+};
