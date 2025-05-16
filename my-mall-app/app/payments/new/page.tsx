@@ -1,21 +1,35 @@
 'use client';
-
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function PaymentForm() {
   const [formData, setFormData] = useState({
-    shop_id: '',
+    shop_id: 1,
     amount: '',
-    payment_date: '',
     payment_method: 'Cash',
   });
+  const [shops, setShops] = useState<{ shop_id: number; name: string }[]>([]);
 
   const router = useRouter();
+ useEffect(() => {
+    const fetchShops = async () => {
+      const res = await fetch('/api/payments/new');
+      if (res.ok) {
+        const data = await res.json();
+              console.log('shops from API:', data);
 
+        setShops(data);
+      } else {
+        alert('Failed to load shops');
+      }
+    };
+
+    fetchShops();
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+     console.log(formData.shop_id);
     const res = await fetch('/api/payments/new', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -29,14 +43,18 @@ export default function PaymentForm() {
     }
   };
 
+
+
   return (
+     <div className="p-8 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Add New Payment</h1>
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Shop</label>
+        <label className="block text-sm font-medium text-gray-700">Shops with your active contract</label>
         <select
           name="shop_id"
           value={formData.shop_id}
-          onChange={(e) => setFormData({ ...formData, shop_id: e.target.value })}
+          onChange={(e) => setFormData({ ...formData, shop_id: Number( e.target.value)  })}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           required
         >
@@ -50,17 +68,6 @@ export default function PaymentForm() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Payment Date</label>
-          <input
-            type="date"
-            name="payment_date"
-            value={formData.payment_date}
-            onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          />
-        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Amount (TL)</label>
@@ -108,5 +115,6 @@ export default function PaymentForm() {
         </button>
       </div>
     </form>
+  </div>
   );
 }

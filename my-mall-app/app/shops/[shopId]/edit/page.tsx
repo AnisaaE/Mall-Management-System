@@ -13,7 +13,8 @@ export default async function EditShopPage({
 }) {
   const session = await getServerSession(authOptions);
 
-  const { shopId } = await params;
+  const { shopId } = await 
+  params;
   if (!session?.user) redirect('/login');
   if (session.user.role !== 'admin') redirect('/unauthorized');
 
