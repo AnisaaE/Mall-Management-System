@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { query } from '@/lib/db/connection';
 import { Employee } from '@/types/db_types';
 import Link from 'next/link';
-
+import EmployeeFilters from '@/components/EmployeeFilters';
 
 export default async function EmployeesPage() {
    const session = await getServerSession(authOptions);
@@ -32,19 +32,10 @@ export default async function EmployeesPage() {
          {session.user.role === 'manager' ? 'Your Employees' : 'All Employees'} 
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {employees.map(emp => (
-          <Link
-          
-            key={emp.employee_id}
-            href={`/employees/${emp.employee_id}`} 
-            className="border p-4 rounded shadow hover:shadow-md transition"
-          >
-            <h2 className="text-xl font-semibold">{emp.first_name} {emp.last_name}</h2>
-            <p className="text-gray-600">{emp.position || 'No Position'}</p>
-          </Link>
-        ))}
-      </div>
+
+      <EmployeeFilters initialEmployees={employees} />
+
+     
 
       {session.user.role === 'admin' &&   (
         <a
