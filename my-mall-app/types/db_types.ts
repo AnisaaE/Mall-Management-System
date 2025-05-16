@@ -67,3 +67,36 @@ export type Position= {
   position_id:number;
   position_name:string;
 };
+
+export type Event = {
+  event_id:number;
+  start_date:string;
+  end_date:string;
+  cost:number;
+  description:string;
+  name:string;
+};
+
+
+export type Salary = {
+  contract_id: number;
+  employee_name: string;
+  start_date: string;
+  end_date:string;
+  salary: number;
+};
+
+export type Supplier = {
+  supplier_id: number;
+  name: string;
+};
+
+
+export type Expenses = {
+  expense_id: number;
+  amount: number;
+  date: string;
+  description: string | null;
+  title: string | null;
+  expense_type_name: string | null;
+};
