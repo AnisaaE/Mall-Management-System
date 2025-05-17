@@ -54,9 +54,9 @@ export default function ExpensesPage() {
 
 
 
-      alert("Paid işlem başarılı");
+      alert("Paid is successful");
     } else {
-      alert("Paid işleminde hata oldu");
+      alert("Paid is failed");
     }
   };
 
