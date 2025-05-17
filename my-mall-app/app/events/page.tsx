@@ -14,7 +14,8 @@ export default async function EventsPage({
     end_date?: string;
     sort?: 'newest' | 'oldest' | 'cheapest' | 'expensive';
   };
-}) {
+}) 
+{
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect('/login');
 
@@ -157,6 +158,15 @@ export default async function EventsPage({
       </div>
 
       <EventFilters initialEvents={events} />
+
+      {session.user.role === 'admin' && (
+        <a
+          href="/events/new"
+          className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-blue-700"
+        >
+          + Add Event
+        </a>
+      )}
     </div>
   );
 }

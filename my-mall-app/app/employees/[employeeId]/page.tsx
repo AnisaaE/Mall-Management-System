@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { format } from 'date-fns';
 import { Employee, Contract, EmployeeContract } from '@/types/db_types';
 import DeleteEmployeeButton from '@/components/DeleteEmployeeButton';
+import Link from 'next/link';
 
 export default async function EmployeeDetailPage({
   params,
@@ -106,6 +107,10 @@ export default async function EmployeeDetailPage({
             </div>
           )}
         </div>
+      </div>
+      <div className="text-right">
+        <Link href="/employees" className="inline-block bg-green-600 text-white px-4 py-2 mt-6 rounded hover:bg-blue-700">← Back to Emloyees</Link>
+        
       </div>
     </div>
   );

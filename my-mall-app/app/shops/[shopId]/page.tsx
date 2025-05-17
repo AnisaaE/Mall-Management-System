@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import DeleteShopButton from '@/components/DeleteShopButton';
 import { format } from 'date-fns';
 import { Contract, Shop } from '@/types/db_types';
+import Link from 'next/link';
 
 export default async function ShopDetailPage({
   params,
@@ -115,6 +116,11 @@ export default async function ShopDetailPage({
             </div>
           )}
         </div>
+      </div>
+
+      <div className="text-right">
+        <Link href="/shops" className="inline-block bg-green-600 text-white px-4 py-2 mt-6 rounded hover:bg-blue-700">← Back to Shops</Link>
+        
       </div>
     </div>
   );

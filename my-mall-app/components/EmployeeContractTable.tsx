@@ -15,13 +15,13 @@ export default function EmployeeContractTable({ contracts }: { contracts: any[] 
       });
 
       if (res.ok) {
-        alert("Sözleşme silindi ✅");
+        alert("Deleted. ✅");
         router.refresh(); // sayfayı yeniden yükler
       } else {
-        alert("Silme işlemi başarısız ❌");
+        alert("Delete failed. ❌");
       }
     } catch (error) {
-      alert("Sunucu hatası oluştu.");
+      alert("Server error.");
     }
   };
 
@@ -34,7 +34,7 @@ export default function EmployeeContractTable({ contracts }: { contracts: any[] 
           <th className="p-2 border">End</th>
           <th className="p-2 border">Salary</th>
           <th className="p-2 border">Status</th>
-          <th className="p-2 border">İşlem</th>
+          <th className="p-2 border">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -58,7 +58,7 @@ export default function EmployeeContractTable({ contracts }: { contracts: any[] 
                 onClick={() => handleDelete(c.contract_id)}
                 className="text-red-600 hover:underline text-xs"
               >
-                Sil
+                Delete
               </button>
             </td>
           </tr>
