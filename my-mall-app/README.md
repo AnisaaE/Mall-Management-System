@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏬 Mall Management System
 
-## Getting Started
+A full-stack web application for managing shopping mall operations such as store rentals, employee contracts, and payments.
 
-First, run the development server:
+## 📌 Project Summary
+- Centralizes mall data management using a MySQL relational database.
+- Role-based access control for Admin, Accountant, and Manager users.
+- Built with Next.js (frontend & backend) using raw SQL queries.
+- Automates contract, payment, and event tracking with database triggers and views.
 
+## 🛠️ Development Environment
+- **Frontend & Backend:** Next.js 13+
+- **Database:** MySQL
+- **Authentication:** NextAuth (with JWT)
+- **Language:** TypeScript / JavaScript
+- **Package Manager:** npm or yarn
+
+## 👤 User Roles
+
+- **Admin:** Full access to all entities (shops, contracts, employees, events, payments).
+- **Accountant:** View all records and manage payment approvals.
+- **Manager:** Access only their own shops/contracts and submit payments.
+
+## 📸 Interface Screenshot
+
+> _(Insert a screenshot image of the dashboard here)_  
+> Example:  
+> ![Dashboard Screenshot](./screenshots/dashboard.png)
+
+## ⚙️ Features
+
+- 🔐 Secure login with role-based dashboard redirection.
+- 📊 Real-time database interaction with raw SQL queries.
+- 🧾 Automatic logging and reporting via database triggers and views.
+- ✅ RESTful API endpoints with built-in RBAC middleware.
+
+## 🗄️ Database Setup
+
+1. **Import the SQL schema:**
+
+   The project includes a `mall_management_schema.sql` file that contains the full MySQL database structure (tables, relationships, views, and triggers).
+
+2. **Steps to import:**
+
+   - Open your MySQL client (e.g., phpMyAdmin, MySQL Workbench, or CLI).
+   - Create a new database (e.g., `mall_management_db`).
+   - Run the SQL script:
+     ```bash
+     mysql -u your_user -p mall_management_db < mall_management_schema.sql
+     ```
+
+3. **Update `.env.local`:**
+
+
+## 🧑‍💻 How to Install & Run the Project
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/mall-management-system.git
+   cd mall-management-system
+   ```
+2. **Install dependencies:**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+     npm install
 ```
+3. **Install dependencies:**
+in .env.local folder :
+DATABASE_URL=your_mysql_connection_string
+NEXTAUTH_SECRET=your_jwt_secret
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. **Run the development server:**
+   ```bash
+   git clone https://github.com/yourusername/mall-management-system.git
+   cd mall-management-system
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+⚠️ The SQL file must be imported **before** running the project to avoid database errors.
 
-## Learn More
+## 🗄️ Database Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. **Import the SQL schema:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   The project includes a `mall_management_schema.sql` file that contains the full MySQL database structure (tables, relationships, views, and triggers).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Steps to import:**
 
-## Deploy on Vercel
+   - Open your MySQL client (e.g., phpMyAdmin, MySQL Workbench, or CLI).
+   - Create a new database (e.g., `mall_management_db`).
+   - Run the SQL script:
+     ```bash
+     mysql -u your_user -p mall_management_db < mall_management_schema.sql
+     ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Update `.env.local`:**
