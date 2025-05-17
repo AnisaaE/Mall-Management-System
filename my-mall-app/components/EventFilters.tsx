@@ -1,16 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import EventsGrid from './EventCard'; // ya da EventList, EventsGrid vs. sen ne kullandıysan
-interface Event {
-  event_id: number;
-  name?: string;
-  start_date: string;
-  end_date: string;
-  cost: number;
-  description: string;
-  
-}
+import EventsGrid from './EventCard';
+import {Event} from '@/types/db_types'
 
 interface EventFiltersProps {
   initialEvents: Event[];
