@@ -3,15 +3,8 @@
 import Link from 'next/link';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+import {Event} from '@/types/db_types'
 
-export interface Event {
-  event_id: number;
-  name?: string;
-  start_date: string;
-  end_date: string;
-  cost: number;
-  description: string;
-}
 
 export default function EventsGrid({ events }: { events: Event[] }) {
   if (events.length === 0) {
@@ -41,10 +34,10 @@ export default function EventsGrid({ events }: { events: Event[] }) {
               {event.name}
             </h2>
             <p className="text-gray-600 mt-2 relative z-10">
-              Start: {format(new Date(event.start_date), 'dd.MM.yyyy')}
+              Start: {event.start_date ? format(new Date(event.start_date), 'dd.MM.yyyy') : 'N/A'}
             </p>
             <p className="text-gray-600 relative z-10">
-              End: {format(new Date(event.end_date), 'dd.MM.yyyy')}
+              End: {event.end_date ? format(new Date(event.end_date), 'dd.MM.yyyy') : 'N/A'}
             </p>
             <p className="text-gray-600 relative z-10">
               Cost: {event.cost} TL
