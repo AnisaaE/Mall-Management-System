@@ -25,7 +25,7 @@ A full-stack web application for managing shopping mall operations such as store
 
 > _(Insert a screenshot image of the dashboard here)_  
 > Example:  
-> ![Dashboard Screenshot](.my-mall-app/screenshots/dashboard.png)
+> ![Dashboard Screenshot](./my-mall-app/screenshots/dashboard.png)
 
 ## ⚙️ Features
 
