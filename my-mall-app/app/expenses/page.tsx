@@ -6,6 +6,7 @@ import { Salary } from '@/types/db_types';
 import { Supplier } from '@/types/db_types';
 import { Expenses } from '@/types/db_types';
 
+
 type PaidExpense = Expenses; 
 
 export default function ExpensesPage() {
@@ -14,6 +15,11 @@ export default function ExpensesPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [expenses, setExpenses] = useState<Expenses[]>([]);
   const [paidExpenses, setPaidExpenses] = useState<PaidExpense[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Salary | null>(null);
+
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [amount, setAmount] = useState<number>(0);
+
 
   // Verileri yükle
   const fetchData = async () => {
@@ -25,7 +31,10 @@ export default function ExpensesPage() {
       setSuppliers(data.suppliers || []);
       setExpenses(data.expenses || []);
       setPaidExpenses(data.paidExpenses || []);
+
     }
+
+    console.log(expenses);
   };
 
   useEffect(() => {
@@ -34,6 +43,7 @@ export default function ExpensesPage() {
 
   // Pay butonuna basıldığında çağrılır
   const handlePay = async (type: "events" | "suppliers" | "expenses" | "salaries", id: number) => {
+    
     const res = await fetch("/api/expenses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -60,6 +70,65 @@ export default function ExpensesPage() {
     }
   };
 
+  const handleSupplierPay = async () => {
+  if (!selectedSupplier || !amount) {
+    alert("Please select supplier and enter amount");
+    return;
+  }
+console.log(selectedSupplier.supplier_id)
+  const res = await fetch("/api/expenses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "suppliers",
+      supplier_id: selectedSupplier.supplier_id,
+      amount,
+      name: selectedSupplier.name
+    }),
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    if (data.paidExpense) {
+      setPaidExpenses((prev) => [...prev, data.paidExpense]);
+    }
+    setSelectedSupplier(null);
+    setAmount(0);
+    alert("Paid successfully");
+  } else {
+    alert("Payment failed");
+  }
+};
+
+const handleEmployeePay = async () => {
+  if (!selectedEmployee) {
+    alert("Please select an employee");
+    return;
+  }
+
+  const res = await fetch("/api/expenses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "salaries",
+      id: selectedEmployee.contract_id,
+      name: selectedEmployee.employee_name,
+      amount: selectedEmployee.salary
+    }),
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    if (data.paidExpense) {
+      setPaidExpenses((prev) => [...prev, data.paidExpense]);
+    }
+    setSelectedEmployee(null);
+    alert("Salary paid successfully");
+  } else {
+    alert("Payment failed");
+  }
+};
+
   return (
     <div className="p-8 space-y-8">
       <section>
@@ -68,8 +137,7 @@ export default function ExpensesPage() {
           <thead>
             <tr className="bg-gray-100">
               <th className="border p-2">Name</th>
-              <th className="border p-2">Start Date</th>
-              <th className="border p-2">End Date</th>
+              <th className="border p-2">Creation Date</th>
               <th className="border p-2">Cost</th>
               <th className="border p-2">Description</th>
               <th className="border p-2">Action</th>
@@ -86,8 +154,7 @@ export default function ExpensesPage() {
             {events.map((event) => (
               <tr key={event.event_id}>
                 <td className="border p-2">{event.name}</td>
-                <td className="border p-2">{event.start_date}</td>
-                <td className="border p-2">{event.end_date || "-"}</td>
+                <td className="border p-2">{event.date}</td>
                 <td className="border p-2">{event.cost ?? "-"}</td>
                 <td className="border p-2">{event.description || "-"}</td>
                 <td className="border p-2 text-center">
@@ -104,87 +171,100 @@ export default function ExpensesPage() {
         </table>
       </section>
 
-      <section>
+<section>
   <h2 className="text-xl font-semibold mb-4">Salaries</h2>
-  <table className="w-full border border-gray-300">
-    <thead>
-      <tr className="bg-gray-100">
-        <th className="border p-2">Employee</th>
-        <th className="border p-2">Amount</th>
-        <th className="border p-2">Start Date</th>
-        <th className="border p-2">End Date</th>
-        <th className="border p-2">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {salaries.length === 0 ? (
-        <tr>
-          <td colSpan={4} className="text-center p-4">
-            No unpaid salaries
-          </td>
-        </tr>
-      ) : (
-        salaries.map((salary) => (
-          <tr key={salary.contract_id}>
-            <td className="border p-2">{salary.employee_name}</td>
-            <td className="border p-2">{salary.salary}</td>
-            <td className="border p-2">{salary.start_date}</td>
-            <td className="border p-2">{salary.end_date}</td>
-            <td className="border p-2 text-center">
-              <button
-                onClick={() => handlePay("salaries", salary.contract_id)}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-              >
-                Pay
-              </button>
-            </td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
+
+  {/* Employee Dropdown */}
+  <div className="mb-4">
+    <label className="block font-medium mb-1">Select Employee</label>
+    <select
+      className="w-full p-2 border rounded"
+      value={selectedEmployee?.contract_id || ""}
+      onChange={(e) => {
+        const contractId = Number(e.target.value);
+        const employee = salaries.find((s) => s.contract_id === contractId);
+        setSelectedEmployee(employee || null);
+      }}
+    >
+      <option value="">-- Select Employee --</option>
+      {salaries.map((salary) => (
+        <option key={salary.contract_id} value={salary.contract_id}>
+          {salary.employee_name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Salary Display */}
+  {selectedEmployee && (
+    <div className="mb-4">
+      <p><strong>Salary:</strong> {selectedEmployee.salary}</p>
+      <p><strong>Start Date:</strong> {selectedEmployee.start_date}</p>
+      <p><strong>End Date:</strong> {selectedEmployee.end_date}</p>
+      <button
+        onClick={handleEmployeePay}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-2"
+      >
+        Pay
+      </button>
+    </div>
+  )}
 </section>
 
-
-
-
       <section>
-        <h2 className="text-xl font-semibold mb-4">Suppliers</h2>
-        <table className="w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {suppliers.length === 0 && (
-              <tr>
-                <td colSpan={2} className="text-center p-4">
-                  No suppliers
-                </td>
-              </tr>
-            )}
-            {suppliers.map((supplier) => (
-              <tr key={supplier.supplier_id}>
-                <td className="border p-2">{supplier.name}</td>
-                <td className="border p-2 text-center">
-                  <button
-                    onClick={() => handlePay("suppliers", supplier.supplier_id)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                  >
-                    Pay
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+  <h2 className="text-xl font-semibold mb-4">Suppliers</h2>
+  {suppliers.length === 0 ? (
+    <div className="italic text-gray-500">No suppliers found</div>
+  ) : (
+    <div className="space-y-4">
+      <select
+        className="border p-2 rounded w-full max-w-sm"
+        onChange={(e) => {
+          const selectedId = parseInt(e.target.value);
+          const selectedSupplier = suppliers.find(s => s.supplier_id === selectedId);
+          if (selectedSupplier) {
+            setSelectedSupplier(selectedSupplier);
+          } else {
+            setSelectedSupplier(null);
+          }
+        }}
+        defaultValue=""
+      >
+        <option value="" disabled>
+          Select a supplier
+        </option>
+        {suppliers.map((s) => (
+          <option key={s.supplier_id} value={s.supplier_id}>
+            {s.name}
+          </option>
+        ))}
+      </select>
+
+      {selectedSupplier && (
+        <div className="space-y-2">
+          <p><strong>Supplier:</strong> {selectedSupplier.name}</p>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            className="border p-2 rounded w-full max-w-sm"
+            value={amount}
+            onChange={(e) => setAmount(parseFloat(e.target.value))}
+          />
+          <button
+            onClick={handleSupplierPay}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Pay
+          </button>
+        </div>
+      )}
+    </div>
+  )}
+</section>
 
       <section>
         <h2 className="text-xl font-semibold mb-4">Paid Expenses</h2>
-        {paidExpenses.length === 0 ? (
+        {expenses.length === 0 ? (
           <div className="italic text-gray-500">No paid expenses yet.</div>
         ) : (
           <table className="w-full border border-gray-300">
@@ -198,7 +278,7 @@ export default function ExpensesPage() {
               </tr>
             </thead>
             <tbody>
-              {paidExpenses.map((exp) => (
+              {expenses.map((exp) => (
                 <tr key={exp.expense_id}>
                   <td className="border p-2">{exp.title || "-"}</td>
                   <td className="border p-2">{exp.amount}</td>
@@ -213,4 +293,5 @@ export default function ExpensesPage() {
       </section>
     </div>
   );
-}
+};
+

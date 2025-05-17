@@ -70,8 +70,9 @@ export type Position= {
 
 export type Event = {
   event_id:number;
-  start_date:string;
-  end_date:string;
+  start_date?:string;
+  end_date?:string;
+  date?:string;
   cost:number;
   description:string;
   name:string;

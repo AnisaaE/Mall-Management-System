@@ -4,28 +4,32 @@ import { authOptions } from "@/lib/authOptions";
 import { query } from "@/lib/db/connection";
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  try {
-    // eventler (unpaid)
-    const events = await query(
-      `SELECT event_id, start_date, end_date, cost, description, name FROM event`
-    );
+    try {
+        // eventler (unpaid)
+        const events = await query(
+            `SELECT 
+    e.expense_id AS event_id , e.title AS name, e.amount AS cost ,e.description,e.date FROM expenses e
+   WHERE e.is_paid = false AND e.expense_type_id=1`
+        );
 
-    // suppliers
-    const suppliers = await query(`SELECT supplier_id, name FROM supplier`);
 
-    // expenses
-    const expenses = await query(
-      `SELECT e.expense_id, e.amount, e.date, e.description, e.title, et.name AS expense_type_name
+        // suppliers
+        const suppliers = await query(`SELECT supplier_id, name FROM supplier`);
+
+        // expenses
+        const expenses = await query(
+            `SELECT e.expense_id, e.amount, e.date, e.description, e.title, et.name AS expense_type_name, e.is_paid
        FROM expenses e
-       LEFT JOIN expense_type et ON e.expense_type_id = et.expense_type_id`
-    );
+       LEFT JOIN expense_type et ON e.expense_type_id = et.expense_type_id
+       WHERE e.is_paid=1`
+        );
 
-    const salaries = await query(`
+        const salaries = await query(`
     SELECT 
     ec.employee_contract AS contract_id,
     e.name AS employee_name,
@@ -39,58 +43,89 @@ export async function GET(req: Request) {
 `);
 
 
-    // paidExpenses (şimdilik boş dizi olarak döndürüyoruz, kendi DB yapına göre güncelle)
-    const paidExpenses: any[] = [];
-
-    return NextResponse.json({ events, suppliers, expenses, paidExpenses,salaries });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
-  }
+        return NextResponse.json({ events, suppliers, expenses, salaries });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "Database error" }, { status: 500 });
+    }
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const { type, id } = await req.json();
-
-    if (!type || !id) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Pay işlemi: type göre işlem
-    if (type === "events") {
-      // event tablosundan silme değil, bu event ile ilişkili unpaid expenses silinebilir veya
-      // Bu örnekte sadece expenses tablosundaki unpaid kayıtları sil (trigger ile event -> expenses eklenmiş varsayımı)
+    try {
+        const body = await req.json();
+        const { type, id, supplier_id, amount, name } = body;
 
-      // expenses tablosundaki event kaynaklı unpaid kaydı silmek için:
-      // varsayalım expenses.title = event.name ile ilişkilendirilmiş
-      // Daha kesin bir ilişki için event_id foreign key ekleyebilirsin, biz basit yapıyoruz
+        console.log(type, id);
+        if (!type) {
+            console.log("!type and id");
+            return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+        }
 
-      // expenses'den event adı ile eşleşeni sil
-      await query(`DELETE FROM expenses WHERE title = (SELECT name FROM event WHERE event_id = ?) AND expense_type_id = (SELECT expense_type_id FROM expense_type WHERE name = 'unpaid')`, [id]);
+        // Pay işlemi: type göre işlem
+        if (type === "events") {
+            console.log("entered in if event");
+            // Event ile ilişkili expenses kayıtlarını "ödenmiş" olarak işaretle
+            await query(`UPDATE expenses SET is_paid = true WHERE expense_id = ?`, [id]);
 
-      // event tablosundan kayıt silme istersen:
-      // await query(`DELETE FROM event WHERE event_id = ?`, [id]);
+        }
 
-    } else if (type === "suppliers") {
-      // suppliers tablosunda pay sonrası işlem yok, demo olarak hiçbir şey yapma
+        else if (type === "suppliers") {
 
-    } else if (type === "expenses") {
-      // expenses tablosundan ilgili kaydı sil
-      await query(`DELETE FROM expenses WHERE expense_id = ?`, [id]);
-    } else {
-      return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+            const date = new Date().toISOString().split("T")[0];
+
+            const insertRes = await query(`
+    INSERT INTO expenses (title, amount, description, expense_type_id, is_paid, supplier_id)
+   VALUES (?, ?, ?, ?, ?, ?)
+  `, [name, amount, "Paid to " + name, 2, 1, supplier_id]);
+            const paidExpense = {
+                title: (await query(`SELECT name FROM supplier WHERE supplier_id = ?`, [supplier_id]))[0].name,
+                amount,
+                date,
+                description: 'Paid to supplier',
+                expense_type_name: 'Supplier',
+            };
+
+            return NextResponse.json({ success: true, paidExpense });
+        }
+        else if (type === "salaries") {
+            const insertRes = await query(`
+    INSERT INTO expenses (title, amount, description, expense_type_id, is_paid, employee_contract)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `, [
+                name,
+                amount,
+                "Paid salary",
+                3, 
+                1,
+                id
+            ]);
+
+            const paidExpense = {
+                title: name,
+                amount: amount,
+                description: "Paid salary",
+                expense_type_name: "Salary",
+            };
+
+            return NextResponse.json({ success: true, paidExpense });
+        }
+        else if (type === "expenses") {
+            // expenses tablosundan ilgili kaydı sil
+            await query(`DELETE FROM expenses WHERE expense_id = ?`, [id]);
+        }
+        else {
+            return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
 }
 
