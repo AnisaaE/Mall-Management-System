@@ -33,7 +33,7 @@ export default async function AddEmployeeContractPage() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Yeni Çalışan Sözleşmesi Ekle</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Creating New Contract</h1>
         <EmployeeContractForm employees={employees} />
       </div>
     </div>

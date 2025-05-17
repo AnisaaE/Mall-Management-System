@@ -16,7 +16,7 @@ export default function DeleteEventButton({ eventId }: { eventId: string }) {
 
   return (
     <button onClick={handleDelete} className="bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 text-sm">
-      🗑 Delete
+       Delete
     </button>
   );
 }

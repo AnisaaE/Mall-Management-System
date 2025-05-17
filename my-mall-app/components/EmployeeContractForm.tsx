@@ -30,7 +30,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
       });
 
       if (res.ok) {
-        setMessage("✅ Sözleşme başarıyla eklendi.");
+        setMessage("✅ Contract added.");
         setEmployeeId("");
         setStartDate("");
         setEndDate("");
@@ -39,10 +39,10 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
         router.push("/employee-contracts");
       } else {
         const data = await res.json();
-        setMessage("❌ Hata: " + data.error);
+        setMessage("❌ Error: " + data.error);
       }
     } catch (err) {
-      setMessage("❌ Sunucu hatası oluştu.");
+      setMessage("❌ Server error.");
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label>Çalışan:</label>
+        <label>Employee:</label>
         <select
           name="employee_id"
           value={employeeId}
@@ -59,7 +59,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
           className="w-full border p-2"
           required
         >
-          <option value="">Seçiniz</option>
+          <option value="">Select Employee</option>
           {employees.map((e) => (
             <option key={e.employee_id} value={e.employee_id}>
               {e.name}
@@ -69,7 +69,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
       </div>
 
       <div>
-        <label>Başlangıç Tarihi:</label>
+        <label>Start Date:</label>
         <input
           type="date"
           name="start_date"
@@ -81,7 +81,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
       </div>
 
       <div>
-        <label>Bitiş Tarihi:</label>
+        <label>End Date:</label>
         <input
           type="date"
           name="end_date"
@@ -93,7 +93,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
       </div>
 
       <div>
-        <label>Maaş:</label>
+        <label>Salary:</label>
         <input
           type="number"
           name="salary"
@@ -109,7 +109,7 @@ export default function EmployeeContractForm({ employees }: { employees: any[] }
         disabled={loading}
         className="bg-blue-600 text-white px-4 py-2 rounded"
       >
-        {loading ? "Kaydediliyor..." : "Kaydet"}
+        {loading ? "Saving..." : "Save"}
       </button>
 
       {message && <p className="text-sm text-gray-700 mt-2">{message}</p>}

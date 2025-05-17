@@ -48,7 +48,7 @@ export default async function EventsPage() {
       {session.user.role === 'admin' && (
         <a
           href="/events/new"
-          className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700"
+          className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-blue-700"
         >
           + Add Event
         </a>
