@@ -2,88 +2,71 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { redirect } from 'next/navigation';
 import { query } from '@/lib/db/connection';
-import { format } from 'date-fns';
 import Link from 'next/link';
-
-type Event = {
-  event_id: number;
-  name: string;
-  start_date: Date;
-  end_date: Date;
-  cost: number | string | null;
-  description: string;
-};
-
-// 💡 Veriyi bileşen dışında çekiyoruz
-async function getEvent(eventId: string): Promise<Event | null> {
-  const results = await query<any[]>(
-    `SELECT * FROM event WHERE event_id = ?`,
-    [eventId]
-  );
-
-  if (results.length === 0) return null;
-
-  const raw = results[0];
-  return {
-    ...raw,
-    start_date: new Date(raw.start_date),
-    end_date: new Date(raw.end_date),
-  };
-}
+import DeleteEventButton from '@/components/DeleteEventButton';
+import { format } from 'date-fns';
 
 export default async function EventDetailPage({
   params,
 }: {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }) {
+  const { eventId } = await params;
+
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect('/login');
 
-  const event = await getEvent(params.eventId);
-  if (!event) {
-    return <div className="p-8 max-w-4xl mx-auto">Event not found.</div>;
+  // Eğer event tablosunda shop_id yoksa JOIN KALDIR
+  const sql = `
+    SELECT 
+      event_id,
+      name,
+      start_date,
+      end_date,
+      cost,
+      description
+    FROM event
+    WHERE event_id = ?
+  `;
+  const results = await query(sql, [eventId]);
+
+  if (results.length === 0) {
+    return <div className="p-8 max-w-4xl mx-auto">The event was not found.</div>;
   }
 
+  const event = results[0];
+
   return (
-    <>
-      {/* Detay Kartı */}
-      <div className="p-8 max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-blue-800 mb-4">{event.name}</h1>
-          <div className="space-y-3 text-gray-800">
-            <div>
-              <p className="text-sm text-gray-500">Start Date</p>
-              <p className="font-medium">{format(event.start_date, 'dd.MM.yyyy')}</p>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">{event.name}</h1>
+            <div className="flex gap-4 mt-2 text-gray-600">
+              <span>📅 Start: {format(new Date(event.start_date), 'dd.MM.yyyy')}</span>
+              <span>⏳ End: {format(new Date(event.end_date), 'dd.MM.yyyy')}</span>
+              <span>💰 Cost: {event.cost} TL</span>
             </div>
-            <div>
-              <p className="text-sm text-gray-500">End Date</p>
-              <p className="font-medium">{format(event.end_date, 'dd.MM.yyyy')}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Cost</p>
-              <p className="font-medium text-green-700">
-                {event.cost ? `${Number(event.cost).toFixed(2)} TL` : 'Not specified'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Description</p>
-              <p className="whitespace-pre-line">{event.description}</p>
-            </div>
+            <p className="mt-4 text-gray-700"><b>Description:</b> {event.description}</p>
           </div>
+
+          {session.user.role === 'admin' && (
+            <div className="flex gap-2">
+              <Link
+                href={`/events/${event.event_id}/edit`}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm"
+              >
+                ✏️ Edit
+              </Link>
+              <DeleteEventButton eventId={event.event_id.toString()} />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 🔙 Kart altı, sağ hizalı buton */}
-      <div className="mt-4 flex justify-end max-w-4xl mx-auto px-8">
-        <Link
-          href="/events"
-          className="inline-block border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2 rounded transition"
-        >
-          ← Back to Events
-        </Link>
+      <div className="text-right">
+        <Link href="/events" className="text-blue-600 hover:underline">← Back to Events</Link>
       </div>
-    </>
+    </div>
   );
 }
-
-
