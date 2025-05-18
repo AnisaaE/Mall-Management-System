@@ -10,7 +10,8 @@ import {
   CreditCardIcon, 
   CalendarIcon, 
   CurrencyDollarIcon,
-  ArrowLeftOnRectangleIcon
+  ArrowLeftOnRectangleIcon,
+    UsersIcon
 } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
 
@@ -28,6 +29,7 @@ export default function Sidebar() {
     { name: "Payments", href: "/payments", icon: CreditCardIcon },
     { name: "Events", href: "/events", icon: CalendarIcon },
     { name: "Expenses", href: "/expenses", icon: CurrencyDollarIcon },
+      { name: "Users", href: "/users", icon: UsersIcon }
   ];
 
   // Ограничена навигация за мениджъри
